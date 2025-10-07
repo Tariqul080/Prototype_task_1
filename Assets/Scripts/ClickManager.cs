@@ -16,16 +16,20 @@ public class ClickManager : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0)) // Left mouse button
         {
+
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit))
             {
                 if (hit.collider != null && hit.collider.CompareTag("Clickable"))
                 {
-                    selectedObject = hit.collider.gameObject;
-                    selectedObjPos = selectedObject.transform.position;
-                    objectZDistance = Camera.main.WorldToScreenPoint(selectedObject.transform.position).z;
-                    Debug.Log("Clicked on: " + selectedObject.name);
+                    if (hit.collider.gameObject.GetComponent<MoveableItem>().currentPos == indicator.indicatorCurrentPos || hit.collider.gameObject.GetComponent<MoveableItem>().finalPos == indicator.indicatorCurrentPos)
+                    {
+                        selectedObject = hit.collider.gameObject;
+                        selectedObjPos = selectedObject.transform.position;
+                        objectZDistance = Camera.main.WorldToScreenPoint(selectedObject.transform.position).z;
+                    }
+
                 }
             }
         }
@@ -46,5 +50,10 @@ public class ClickManager : MonoBehaviour
             selectedObject.transform.position = selectedObjPos;
             selectedObject = null;
         }
+    }
+
+    public void Restart()
+    {
+        ClearSelection();
     }
 }

@@ -1,46 +1,63 @@
-using UnityEditor.Rendering;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class TargetPoint : MonoBehaviour
 {
-    [SerializeField] private Transform thermometerPos = null;
-    [SerializeField] private Transform seedPos = null;
     [SerializeField] private IndicatorPoint indicator;
+    [SerializeField] private bool isBattleA = true;
+    [SerializeField] private UnityEvent completeCallback = null;
 
-    public bool isThermometerDone = false;
-    public bool isSeedDone = false;
+    private static int countThermometer = 0, countSeeds = 0;
+
+    public static void Reset()
+    {
+        countThermometer = 0;
+        countSeeds = 0;
+    }
 
     private void OnTriggerEnter(Collider other)
     {
         GameObject game_object = other.gameObject;
         MoveableItem item = other.GetComponent<MoveableItem>();
 
-        if (game_object.CompareTag("Clickable") && item.isThermometer)
+        if (item == null || !game_object.CompareTag("Clickable"))
         {
-            if (item != null)
+            return;
+        }
+
+        if (item.isTargetBattalA != isBattleA)
+        {
+            return;
+        }
+
+        if (item.isThermometer)
+        {
+            if (item.move_Counter == 0)
             {
-                if (item.isThermometer && item.move_Counter == 0)
+                item.StopMoving();
+                if (item.move_Counter == 0)
                 {
-                    item.StopMoving();
-                    if (item.move_Counter == 0)
-                    {
-                        item.MovePos();
-                        indicator.MoveIndicator(indicator.GetIndicatorByIndex(item.index));
-                    }
+                    item.MovePos();
+                    indicator.MoveIndicator(indicator.GetIndicatorByIndex(item.currentPos));
                 }
+                countThermometer++;
             }
         }
         else
         {
-            if (item != null)
+            if (item.move_Counter == 0)
             {
-                if (!item.isThermometer && item.move_Counter == 0)
-                {
-                    item.StopMoving();
-                    item.MovePos();
-                    indicator.MoveIndicator(indicator.GetIndicatorByIndex(item.index));
-                }
+                item.StopMoving();
+                item.MovePos();
+                indicator.MoveIndicator(indicator.GetIndicatorByIndex(item.currentPos));
+                countSeeds++;
             }
+        }
+
+        if (countThermometer >= 2 && countSeeds >= 2)
+        {
+            indicator.SetActivation(false);
+            completeCallback?.Invoke();
         }
     }
 }

@@ -3,14 +3,17 @@ using UnityEngine;
 
 public class MoveableItem : MonoBehaviour
 {
-    [SerializeField] private ClickManager clickManager;
+    public ClickManager clickManager;
+    public bool isTargetBattalA = true;
+
     public Transform indicator_own_pos;
     public Transform indicator_final_pos;
     public Transform parentTrans;
     public Transform moveTrans;
     public bool isParentPos = true;
     public bool isThermometer = true;
-    public int index;
+    public int currentPos;
+    public int finalPos;
     public int move_Counter = 0;
 
     public void MovePos()
@@ -32,5 +35,12 @@ public class MoveableItem : MonoBehaviour
     public void StopMoving()
     {
         clickManager.ClearSelection();
+    }
+
+    public void Restart()
+    {
+        isParentPos = true;
+        move_Counter = 0;
+        transform.position = parentTrans.position;
     }
 }
