@@ -1,9 +1,11 @@
+using UnityEditor.Rendering;
 using UnityEngine;
 
 public class TargetPoint : MonoBehaviour
 {
     [SerializeField] private Transform thermometerPos = null;
     [SerializeField] private Transform seedPos = null;
+    [SerializeField] private IndicatorPoint indicator;
 
     public bool isThermometerDone = false;
     public bool isSeedDone = false;
@@ -17,13 +19,14 @@ public class TargetPoint : MonoBehaviour
         {
             if (item != null)
             {
-                if (item.isThermometer && !isThermometerDone)
+                if (item.isThermometer && item.move_Counter == 0)
                 {
-                    isThermometerDone = true;
-                    item.move_to_wonPos = true;
                     item.StopMoving();
-                    game_object.transform.position = thermometerPos.position;
-
+                    if (item.move_Counter == 0)
+                    {
+                        item.MovePos();
+                        indicator.MoveIndicator(indicator.GetIndicatorByIndex(item.index));
+                    }
                 }
             }
         }
@@ -31,12 +34,11 @@ public class TargetPoint : MonoBehaviour
         {
             if (item != null)
             {
-                if (!item.isThermometer && !isSeedDone)
+                if (!item.isThermometer && item.move_Counter == 0)
                 {
-                    isSeedDone = true;
-                    item.move_to_wonPos = true;
                     item.StopMoving();
-                    game_object.transform.position = seedPos.position;
+                    item.MovePos();
+                    indicator.MoveIndicator(indicator.GetIndicatorByIndex(item.index));
                 }
             }
         }

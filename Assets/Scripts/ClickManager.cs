@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class ClickManager : MonoBehaviour
 {
+    public IndicatorPoint indicator;
     private GameObject selectedObject = null;
     private Vector3 selectedObjPos = Vector3.zero;
     private float objectZDistance;
@@ -36,6 +37,7 @@ public class ClickManager : MonoBehaviour
             mousePos.z = objectZDistance;
             Vector3 worldPos = Camera.main.ScreenToWorldPoint(mousePos);
             selectedObject.transform.position = worldPos;
+            indicator.MoveIndicator(indicator.GetIndicatorPosition(selectedObject));
         }
 
         // Release mouse button to drop
